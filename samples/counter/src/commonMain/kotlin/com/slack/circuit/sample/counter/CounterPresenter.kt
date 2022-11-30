@@ -3,6 +3,7 @@
 package com.slack.circuit.sample.counter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,10 +30,16 @@ sealed interface CounterEvent : CircuitUiEvent {
 fun CounterPresenter(): CounterState {
   var count by remember { mutableStateOf(0) }
 
+  //  val capturedVariable = 0
+
+  // Comment this line out and uncomment the above to guarantee equality
+  // in the lambda expression for the event sink
+  val capturedVariable by remember(count) { derivedStateOf { count } }
+
   return CounterState(count) { event ->
     when (event) {
-      is CounterEvent.Increment -> count++
-      is CounterEvent.Decrement -> count--
+      is CounterEvent.Increment -> capturedVariable + count++
+      is CounterEvent.Decrement -> capturedVariable  + count--
     }
   }
 }

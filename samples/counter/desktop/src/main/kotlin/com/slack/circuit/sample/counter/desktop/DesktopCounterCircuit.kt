@@ -15,6 +15,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,6 +66,21 @@ fun Counter(state: CounterState, modifier: Modifier = Modifier) {
       }
     }
   }
+    val stateHistory = remember { mutableStateListOf<CounterState>() }
+    LaunchedEffect(state) {
+        stateHistory.add(state)
+        val valueList = stateHistory.map { it.count }
+        // De-dupe equal states with a set
+        val valueSet = stateHistory.toSet().map { it.count }
+
+        val firstStateEmission = stateHistory.firstOrNull()
+        val eventSinkEqualityFlags = stateHistory.map { it.eventSink == firstStateEmission?.eventSink }
+
+        println("Added ${state.count}; List: $valueList; Set: $valueSet")
+        println("eventSinkEqualityFlags: $eventSinkEqualityFlags")
+        println("eventSink hashcode: ${state.eventSink.hashCode()}")
+        println()
+    }
 }
 
 class CounterUiFactory : Ui.Factory {
