@@ -15,6 +15,7 @@ import com.slack.circuit.Navigator
 import com.slack.circuit.Presenter
 import com.slack.circuit.Screen
 import com.slack.circuit.presenterOf
+import kotlin.math.abs
 
 data class CounterState(
   val count: Int,
@@ -34,12 +35,12 @@ fun CounterPresenter(): CounterState {
 
   // Comment this line out and uncomment the above to guarantee equality
   // in the lambda expression for the event sink
-  val capturedVariable by remember(count) { derivedStateOf { count } }
+  val capturedVariable by remember(count) { derivedStateOf { abs(count) % 2 } }
 
   return CounterState(count) { event ->
     when (event) {
-      is CounterEvent.Increment -> capturedVariable + count++
-      is CounterEvent.Decrement -> capturedVariable  + count--
+      is CounterEvent.Increment -> count += 1 + capturedVariable
+      is CounterEvent.Decrement ->  count -=  1 + capturedVariable
     }
   }
 }
